@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan d'Entraînement CTF - Objectif ECW</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Source+Sans+Pro:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #00ff9b;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --text-color: #e0e0e0;
+            --header-color: #ffffff;
+            --border-color: #333;
+            --shadow-color: rgba(0, 255, 155, 0.2);
+            --week-header-color: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--header-color);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        header h1 span {
+            color: var(--primary-color);
+        }
+
+        .intro-coach {
+            text-align: center;
+            font-size: 1.1em;
+            margin: 30px 0;
+            padding: 15px;
+            background-color: var(--card-background);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+        }
+
+        .week-header {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.8em;
+            color: var(--week-header-color);
+            text-align: center;
+            margin: 40px 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 40px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 20px;
+            color: var(--background-color);
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .day-card {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+
+        .day-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-header h2 {
+            margin: 0;
+            color: var(--header-color);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .day-header h2 span {
+            color: var(--primary-color);
+        }
+
+        .day-header .arrow {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+
+        .day-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+
+        .day-card.active .day-content {
+            padding: 15px 20px;
+        }
+
+        .day-card.active .arrow {
+            transform: rotate(90deg);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        li strong {
+            color: var(--text-color);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            margin-top: 5px;
+            min-width: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        label {
+            display: inline-block;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: var(--border-color);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            color: var(--primary-color);
+        }
+
+        .coach-tip,
+        .final-word {
+            background-color: rgba(0, 255, 155, 0.05);
+            border-left: 3px solid var(--primary-color);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .coach-tip strong,
+        .final-word strong {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Plan d'Entraînement <span>ECW</span></h1>
+        </header>
+
+        <div class="intro-coach">
+            <p>Excellent, mettons-nous au travail. En tant que ton coach pour les deux prochaines semaines, je vais te
+                pousser à sortir de ta zone de confort. Ce programme est dense, mais il est conçu pour transformer tes
+                faiblesses en forces et affûter tes points forts. La clé sera la discipline et la méthodologie. Chaque
+                jour est une brique, et à la fin, tu auras construit une base solide pour la qualification.</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+
+        <h2 class="week-header">Semaine 1 : Fondations et Conquête des Faiblesses</h2>
+
+        <div class="day-card" id="day1">
+            <div class="day-header">
+                <h2>Jour 1 <span>// Préparation & Reverse (Bases)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Mise en place de l'environnement, méthodologie et introduction au Reverse Engineering.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Configurer un environnement de travail optimal (VM, outils,
+                            notes).</label></li>
+                    <li><input type="checkbox"><label>Comprendre les bases du langage assembleur x86.</label></li>
+                    <li><input type="checkbox"><label>Savoir analyser un binaire simple pour en trouver la logique et
+                            découvrir un flag caché.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://picoctf.org/"
+                                    target="_blank">PicoCTF</a>:</strong> Faire 5 à 7 challenges de la catégorie
+                            "Reverse Engineering" (les plus faciles) pour te remettre dans le bain.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Compléter la room <a
+                                href="https://tryhackme.com/room/introtox8664" target="_blank">"Intro to
+                                x86-64"</a>.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Réussir les 2 premiers challenges de la
+                            section "App-System" > "Cracking".</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup reverse engineering easy</code> ou
+                            <code>writeup Amossys CTF cracking</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> 2 write-ups de challenges de "Reverse"
+                            simples. Note les étapes : <code>file</code>, <code>strings</code>, ouverture dans
+                            Ghidra/IDA, identification de la fonction <code>main</code>, suivi des comparaisons de
+                            chaînes.</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><code>file</code>, <code>strings</code>, <code>ltrace</code>, <code>strace</code>, <a
+                        href="https://ghidra-sre.org/" target="_blank"><code>Ghidra</code></a> (les bases :
+                    décompilation, graphe de fonctions).</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> La prise de notes est ton arme la plus puissante. Ouvre un outil
+                    de notes (CherryTree, Obsidian, etc.) et documente tout : ce que tu as essayé, ce qui a marché, ce
+                    qui a échoué, et les commandes exactes que tu as utilisées.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day2">
+            <div class="day-header">
+                <h2>Jour 2 <span>// Pwning (Fondamentaux)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Pwning - Buffer Overflow.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Comprendre le fonctionnement de la pile (stack).</label></li>
+                    <li><input type="checkbox"><label>Identifier une vulnérabilité de type "Buffer Overflow".</label>
+                    </li>
+                    <li><input type="checkbox"><label>Écrire un exploit simple pour écraser l'adresse de retour et
+                            contrôler le flux d'exécution.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Commencer (et si possible finir) la room <a
+                                href="https://tryhackme.com/room/bufferoverflowprep" target="_blank">"Buffer Overflow
+                                Prep"</a>. C'est une ressource exceptionnelle.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Faire le challenge "Stack buffer overflow -
+                            Introduction".</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong> <code>ECW CTF writeup pwn</code> ou
+                            <code>ECW CTF buffer overflow writeup</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Lis un write-up sur un challenge de BoF
+                            simple. Concentre-toi sur le script d'exploitation. Comment ont-ils calculé l'offset ?
+                            Ont-ils utilisé des gadgets ROP simples ?</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://www.sourceware.org/gdb/" target="_blank"><code>GDB</code></a> avec <a
+                        href="https://github.com/hugsy/gef" target="_blank">GEF</a>/<a
+                        href="https://github.com/longld/peda" target="_blank">PEDA</a>/<a
+                        href="https://github.com/pwndbg/pwndbg" target="_blank">Pwndbg</a>, <a
+                        href="https://docs.pwntools.com/en/stable/" target="_blank"><code>pwntools</code></a> (les bases
+                    : <code>process</code>, <code>sendline</code>, <code>p32/p64</code>).</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Le Pwning est une science exacte. Sois méticuleux. Chaque octet
+                    compte. Utilise le débugger pas à pas pour visualiser l'état de la pile et des registres. Ne fais
+                    jamais de suppositions, vérifie tout.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day3">
+            <div class="day-header">
+                <h2>Jour 3 <span>// Cryptographie (De César aux Blocs)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Cryptographie.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Reconnaître les chiffrements classiques (César, Vigenère,
+                            substitution).</label></li>
+                    <li><input type="checkbox"><label>Comprendre les bases de la cryptographie symétrique (modes
+                            d'opération des blocs comme CBC, ECB).</label></li>
+                    <li><input type="checkbox"><label>Identifier les faiblesses dans des implémentations
+                            cryptographiques simples.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://picoctf.org/"
+                                    target="_blank">PicoCTF</a>:</strong> Fais une dizaine de challenges de la catégorie
+                            "Cryptography" pour couvrir un large spectre de basiques.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Compléter la room <a
+                                href="https://tryhackme.com/room/cryptography"
+                                target="_blank">"Cryptography"</a>.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> S'attaquer aux challenges de la section
+                            "Cryptanalyse" (Encoding, Chiffrement faible, etc.).</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup crypto</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Trouve 2-3 write-ups. Observe si les
+                            challenges sont basés sur des erreurs d'implémentation (ex: ECB réutilisé, mauvais padding)
+                            ou sur des problèmes purement mathématiques.</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://gchq.github.io/CyberChef/" target="_blank"><code>CyberChef</code></a> (ton meilleur
+                    ami !), <a href="https://www.openssl.org/" target="_blank"><code>openssl</code></a> en ligne de
+                    commande, des scripts Python avec la librairie <code>pycryptodome</code>.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> En crypto, la première étape est l'identification. Est-ce un
+                    encodage (Base64, Hex) ? Un chiffrement classique ? Un problème de maths ? Ne te jette pas sur la
+                    solution, analyse d'abord les données que tu as.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day4">
+            <div class="day-header">
+                <h2>Jour 4 <span>// OSINT (L'Art de la Recherche)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Open Source Intelligence (OSINT).</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Maîtriser les techniques de recherche avancée (<a
+                                href="https://www.exploit-db.com/google-hacking-database" target="_blank">Google
+                                Dorks</a>).</label></li>
+                    <li><input type="checkbox"><label>Savoir extraire des métadonnées (EXIF) d'images et de
+                            documents.</label></li>
+                    <li><input type="checkbox"><label>Utiliser des outils pour trouver des informations sur des
+                            personnes et des entreprises.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Les rooms <a
+                                href="https://tryhackme.com/room/ohsint" target="_blank">"OhSINT"</a> et "Geolocating
+                            Images".</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.hackthebox.com/" target="_blank">Hack
+                                    The Box</a>:</strong> Les challenges OSINT d'entrée de gamme sur la
+                            plateforme.</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup OSINT</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Comment les flags ont été trouvés ?
+                            Était-ce caché dans le code source d'une vieille page web ? Une photo sur un réseau social ?
+                            Une information dans un document public ?</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p>Google (avec les Dorks !), <a href="https://exiftool.org/" target="_blank"><code>exiftool</code></a>,
+                    <a href="https://github.com/sherlock-project/sherlock" target="_blank"><code>sherlock</code></a>,
+                    Maltego.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> L'OSINT est une question de patience et de créativité. Pense
+                    "hors de la boîte". Si tu as un pseudonyme, où une personne l'utiliserait-elle ? Forums de jeux,
+                    GitHub, Twitter... Change ta façon de penser pour celle de la "cible".
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day5">
+            <div class="day-header">
+                <h2>Jour 5 <span>// Reverse (Niveau Supérieur)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Reverse Engineering avancé.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Se sentir plus à l'aise avec la lecture de l'assembleur.</label>
+                    </li>
+                    <li><input type="checkbox"><label>Apprendre à patcher des binaires simples pour modifier leur
+                            comportement.</label></li>
+                    <li><input type="checkbox"><label>Introduction à l'analyse dynamique avec un débugger.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Finir la room <a
+                                href="https://tryhackme.com/room/reverseengineering" target="_blank">"Reverse
+                                Engineering"</a>.</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Continuer la progression dans "App-System" >
+                            "Cracking".</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup reverse medium</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Cherche un write-up qui implique plus
+                            que de la simple lecture de code. Peut-être un algorithme de chiffrement simple à
+                            "reverser", ou une logique de programme complexe à comprendre.</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://ghidra-sre.org/" target="_blank"><code>Ghidra</code></a> (fonctionnalités avancées),
+                    <a href="https://www.sourceware.org/gdb/" target="_blank"><code>GDB</code></a> (débuggage pas à pas,
+                    points d'arrêt).</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Ne te noie pas dans les détails de l'assembleur. Cherche la
+                    logique globale. Quelles sont les fonctions importantes ? Où sont les buffers ? Où sont les
+                    comparaisons ? Zoome et dézoome constamment entre la vue globale et le détail du code.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day6">
+            <div class="day-header">
+                <h2>Jour 6 <span>// Pwning (Approfondissement)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Pwning - Ret2libc et ROP.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Comprendre les protections modernes (NX/DEP).</label></li>
+                    <li><input type="checkbox"><label>Savoir contourner la protection NX en utilisant des attaques de
+                            type "Return-to-libc".</label></li>
+                    <li><input type="checkbox"><label>Commencer à enchaîner des gadgets (ROP).</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Faire les challenges de "Stack buffer
+                            overflow" qui suivent l'introduction (ASLR, Canary, etc.).</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.hackthebox.com/" target="_blank">Hack
+                                    The Box</a>:</strong> Essayer une machine "retired" facile connue pour un challenge
+                            de pwn.</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup pwn ret2libc</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Un script pwntools. Comment l'adresse de
+                            la libc a-t-elle été "leakée" ? Quels gadgets ont été utilisés ? Comment la chaîne ROP
+                            a-t-elle été construite ?</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://docs.pwntools.com/en/stable/" target="_blank"><code>pwntools</code></a> (plus en
+                    profondeur), <a href="https://github.com/JonathanSalwan/ROPgadget"
+                        target="_blank"><code>ROPgadget</code></a>, <a href="https://github.com/david942j/one_gadget"
+                        target="_blank"><code>one_gadget</code></a>.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Le Pwning moderne consiste à trouver deux choses : une
+                    vulnérabilité pour contrôler le flux d'exécution et une fuite d'information (leak) pour contourner
+                    l'ASLR. Cherche toujours ces deux éléments.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day7">
+            <div class="day-header">
+                <h2>Jour 7 <span>// Consolidation de la Semaine</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Révision et pratique mixte des points faibles.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Solidifier les acquis de la semaine.</label></li>
+                    <li><input type="checkbox"><label>Gagner en vitesse sur les challenges faciles et moyens.</label>
+                    </li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Passe 2 heures sur chaque catégorie faible (Reverse, Pwn, Crypto,
+                            OSINT) en faisant des challenges sur <a href="https://www.root-me.org/"
+                                target="_blank">Root-Me</a>. L'objectif est de finir un maximum de challenges de niveau
+                            facile/moyen.</label></li>
+                    <li><input type="checkbox"><label>Pas de nouveaux concepts aujourd'hui, juste de la pratique
+                            intensive.</label></li>
+                </ul>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Le "burnout" est ton pire ennemi. Une journée de consolidation
+                    et de structuration est plus productive qu'une journée de "farm" de challenges sans réfléchir. La
+                    qualité prime sur la quantité.
+                </div>
+            </div>
+        </div>
+
+        <h2 class="week-header">Semaine 2 : Affûtage des Forces et Simulation</h2>
+
+        <div class="day-card" id="day8">
+            <div class="day-header">
+                <h2>Jour 8 <span>// Web (Injection & Logique)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Pentest & Exploitation Web.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Maîtriser les injections SQL (SQLi) manuelles et
+                            automatisées.</label></li>
+                    <li><input type="checkbox"><label>Identifier et exploiter les failles de logique métier (IDOR,
+                            etc.).</label></li>
+                    <li><input type="checkbox"><label>Comprendre et exploiter les failles XSS (Stored, Reflected,
+                            DOM).</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> La room <a
+                                href="https://tryhackme.com/room/owasptop10" target="_blank">"OWASP Top 10"</a>.</label>
+                    </li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.hackthebox.com/" target="_blank">Hack
+                                    The Box</a>:</strong> Choisir une machine "Easy" (active ou retirée) taguée "Web".
+                            Objectif : le "user flag".</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Faire les challenges des sections "Web -
+                            Serveur" (SQLi, File inclusion).</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong> <code>ECW CTF writeup web sqli</code>
+                            ou <code>ECW CTF writeup web IDOR</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Un challenge web. Était-ce une injection
+                            SQL "blind" complexe ? Une faille logique subtile ? Note les "payloads" et la méthodologie
+                            d'énumération.</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://portswigger.net/burp" target="_blank"><code>Burp Suite</code></a> (Repeater,
+                    Intruder), <a href="http://sqlmap.org/" target="_blank"><code>sqlmap</code></a>, <a
+                        href="https://github.com/OJ/gobuster" target="_blank"><code>gobuster</code></a>/<a
+                        href="https://github.com/epi052/feroxbuster" target="_blank"><code>dirb</code></a>.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Pour le web, l'énumération est la clé. Cartographie toute
+                    l'application avant de chercher les failles. Fuzz tout : paramètres, en-têtes, méthodes HTTP. La
+                    faille se cache souvent là où personne ne regarde.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day9">
+            <div class="day-header">
+                <h2>Jour 9 <span>// Web (Failles Modernes)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Exploitation Web avancée.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Exploiter les failles de désérialisation.</label></li>
+                    <li><input type="checkbox"><label>Comprendre et exploiter les Server-Side Template Injections
+                            (SSTI).</label></li>
+                    <li><input type="checkbox"><label>Contourner les filtres de sécurité et les Web Application
+                            Firewalls (WAF).</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://www.hackthebox.com/" target="_blank">Hack
+                                    The Box</a>:</strong> Continuer la machine de la veille (root flag), ou en commencer
+                            une "Medium".</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://portswigger.net/web-security"
+                                    target="_blank">PortSwigger Web Security Academy</a>:</strong> Faire les labs sur
+                            SSTI et la désérialisation. C'est la meilleure ressource pour ça.</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong> <code>ECW CTF writeup web SSTI</code>
+                            ou <code>ECW CTF writeup deserialization</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Étudie la charge utile qui a fonctionné.
+                            Comment le moteur de template a-t-il été identifié ? Quelle chaîne de caractères a permis de
+                            déclencher l'exécution de code ?</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://portswigger.net/burp" target="_blank"><code>Burp Suite</code></a> (avancé), <a
+                        href="https://github.com/frohoff/ysoserial" target="_blank"><code>ysoserial</code></a>, des
+                    scripts Python personnalisés.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Quand tu vois une technologie web que tu ne connais pas (ex:
+                    Flask, NodeJS, un framework spécifique), ton premier réflexe doit être de chercher "common
+                    vulnerabilities" ou "pentesting guide" pour cette technologie.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day10">
+            <div class="day-header">
+                <h2>Jour 10 <span>// Forensique (Réseau & Mémoire)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Analyse Forensique.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Analyser des captures de paquets (.pcap) pour extraire des
+                            informations.</label></li>
+                    <li><input type="checkbox"><label>Analyser des dumps de mémoire vive pour retrouver des processus,
+                            mots de passe, etc.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Les rooms <a
+                                href="https://tryhackme.com/room/wireshark" target="_blank">"Wireshark"</a>,
+                            "Volatility".</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://www.root-me.org/"
+                                    target="_blank">Root-Me</a>:</strong> Faire les challenges "Network analysis" et
+                            "Memory dump" de la catégorie "Forensic".</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup forensic pcap</code> ou
+                            <code>ECW CTF writeup memory dump</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Note les filtres Wireshark utilisés, les
+                            commandes Volatility qui ont donné des résultats, et la logique qui a permis de reconstituer
+                            l'incident.</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://www.wireshark.org/" target="_blank"><code>Wireshark</code></a>, <a
+                        href="https://www.volatilityfoundation.org/" target="_blank"><code>Volatility</code></a>,
+                    <code>tcpdump</code>, <code>tshark</code>.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> En forensique, sois méthodique. Commence par avoir une vue
+                    d'ensemble (statistiques, protocoles, processus) avant de plonger dans les détails. Et n'oublie
+                    jamais de chercher les "low-hanging fruit" avec <code>strings</code>.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day11">
+            <div class="day-header">
+                <h2>Jour 11 <span>// Forensique (Disque & Stégano)</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Analyse de disque, stéganographie.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Analyser des images disque pour trouver des fichiers supprimés ou
+                            cachés.</label></li>
+                    <li><input type="checkbox"><label>Identifier et extraire des données cachées dans des images ou des
+                            fichiers audio.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> La room "Autopsy".</label></li>
+                    <li><input type="checkbox"><label><strong><a href="https://picoctf.org/"
+                                    target="_blank">PicoCTF</a>:</strong> Faire une série de challenges de
+                            stéganographie pour s'entraîner à la vitesse.</label></li>
+                </ul>
+                <h3>Session "Analyse ECW"</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Recherche:</strong>
+                            <code>ECW CTF writeup steganography</code> ou
+                            <code>ECW CTF writeup disk forensic</code>.</label></li>
+                    <li><input type="checkbox"><label><strong>Analyse:</strong> Quelle technique de stéganographie a été
+                            utilisée (LSB, etc.) ? Quel outil a permis de la détecter ? Pour le disque, quel artefact a
+                            trahi la présence du flag ?</label></li>
+                </ul>
+                <h3>Outils à Maîtriser</h3>
+                <p><a href="https://www.sleuthkit.org/autopsy/" target="_blank"><code>Autopsy</code></a>, <a
+                        href="http://steghide.sourceforge.net/" target="_blank"><code>steghide</code></a>, <a
+                        href="https://github.com/zed-0xff/zsteg" target="_blank"><code>zsteg</code></a>, <a
+                        href="https://exiftool.org/" target="_blank"><code>exiftool</code></a>, <a
+                        href="https://github.com/ReFirmLabs/binwalk" target="_blank"><code>binwalk</code></a>.</p>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> La stéganographie repose souvent sur des outils spécifiques. Aie
+                    un "cheat sheet" avec les commandes des 5-6 outils les plus courants pour tester rapidement toutes
+                    les hypothèses.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day12">
+            <div class="day-header">
+                <h2>Jour 12 <span>// Polyvalence & Vitesse</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Enchaîner des challenges de catégories différentes.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Apprendre à changer de contexte rapidement.</label></li>
+                    <li><input type="checkbox"><label>Augmenter la vitesse de résolution sur les challenges
+                            faciles.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Plateforme:</strong> <a href="https://ctftime.org/"
+                                target="_blank">CTFtime.org</a>.</label></li>
+                    <li><input type="checkbox"><label><strong>Action:</strong> Choisis un CTF passé (de type "jeopardy")
+                            dont les challenges sont encore en ligne.</label></li>
+                    <li><input type="checkbox"><label><strong>Objectif:</strong> En 4 heures, essaie de résoudre le plus
+                            de challenges possible, en sautant d'une catégorie à l'autre. Ne passe pas plus de 45
+                            minutes sur un seul challenge.</label></li>
+                </ul>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> En compétition, savoir quand abandonner un challenge est aussi
+                    important que de savoir le résoudre. Si tu ne fais aucun progrès en 30-45 minutes, passe à autre
+                    chose. Tu y reviendras plus tard avec un regard neuf.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day13">
+            <div class="day-header">
+                <h2>Jour 13 <span>// Simulation de CTF</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Simulation en conditions réelles.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Gérer son temps et son stress sur une longue période.</label></li>
+                    <li><input type="checkbox"><label>Appliquer toutes les méthodologies apprises.</label></li>
+                </ul>
+                <h3>Exercices et Challenges Spécifiques</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong><a href="https://www.hackthebox.com/" target="_blank">Hack
+                                    The Box</a> / <a href="https://tryhackme.com/"
+                                    target="_blank">TryHackMe</a>:</strong> Certains sites organisent des "CTF
+                            d'entraînement".</label></li>
+                    <li><input type="checkbox"><label><strong>Alternative:</strong> Retourne sur le CTF que tu as
+                            commencé la veille et consacre une session de 6 à 8 heures pour aller le plus loin
+                            possible.</label></li>
+                </ul>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> Aujourd'hui, concentre-toi sur le "flow" de la compétition.
+                    Commence par les challenges qui te rapportent le plus de points pour le moins d'effort (souvent
+                    OSINT, Web facile, Forensique simple). Garde les challenges de Pwning/Reverse complexes pour la fin.
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" id="day14">
+            <div class="day-header">
+                <h2>Jour 14 <span>// Révision Stratégique & Repos</span></h2>
+                <div class="arrow">▶</div>
+            </div>
+            <div class="day-content">
+                <h3>Thème(s) du jour</h3>
+                <p>Consolidation, préparation de la stratégie et repos.</p>
+                <h3>Objectifs d'apprentissage</h3>
+                <ul>
+                    <li><input type="checkbox"><label>Créer ta propre "cheat sheet" personnalisée.</label></li>
+                    <li><input type="checkbox"><label>Préparer ta stratégie pour le jour J.</label></li>
+                    <li><input type="checkbox"><label>Reposer ton cerveau.</label></li>
+                </ul>
+                <h3>Actions</h3>
+                <ul>
+                    <li><input type="checkbox"><label><strong>Matin:</strong> Relis toutes tes notes des 13 derniers
+                            jours. Rassemble les commandes, les astuces et les liens les plus utiles dans un seul
+                            document. C'est ton "grimoire".</label></li>
+                    <li><input type="checkbox"><label><strong>Après-midi:</strong> Ne touche plus à un terminal. Fais du
+                            sport, sors, regarde un film. Ton cerveau a besoin de consolider les informations.</label>
+                    </li>
+                    <li><input type="checkbox"><label><strong>Soir:</strong> Prépare ton environnement pour le jour J.
+                            Vérifie ta connexion, tes VM, prépare des boissons et des snacks. Lis les règles du CTF de
+                            l'ECW une dernière fois.</label></li>
+                </ul>
+                <div class="coach-tip">
+                    <strong>Conseil du Coach :</strong> La performance en CTF est un marathon, pas un sprint. Les deux
+                    dernières semaines ont été intenses. Le repos d'aujourd'hui est aussi crucial que n'importe quelle
+                    session de Pwning. Fais-moi confiance.
+                </div>
+            </div>
+        </div>
+
+        <div class="final-word">
+            <h3>Mot de la fin du coach</h3>
+            <p>Ce programme est exigeant, mais tu as les capacités pour le suivre. N'oublie pas : la méthodologie prime
+                sur la connaissance brute. Un compétiteur moyen mais très organisé battra toujours un génie désordonné.
+            </p>
+            <p>Pendant la qualification de l'ECW, souviens-toi de tes entraînements. Ne panique pas. Si tu es bloqué,
+                respire, prends du recul et consulte tes notes. Tu es prêt.</p>
+            <p><strong>Bonne chance. Je compte sur toi.</strong></p>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dayCards = document.querySelectorAll('.day-card');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progressBar = document.getElementById('progressBar');
+            const totalCheckboxes = checkboxes.length;
+
+            function updateProgress() {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const percentage = totalCheckboxes > 0 ? Math.round((checkedCount / totalCheckboxes) * 100) : 0;
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = percentage + '%';
+
+                const progress = {};
+                checkboxes.forEach((cb, index) => {
+                    progress[index] = cb.checked;
+                });
+                localStorage.setItem('ctfEcwProgress', JSON.stringify(progress));
+            }
+
+            function loadProgress() {
+                const savedProgress = JSON.parse(localStorage.getItem('ctfEcwProgress'));
+                if (savedProgress) {
+                    checkboxes.forEach((cb, index) => {
+                        if (savedProgress[index]) {
+                            cb.checked = true;
+                        }
+                    });
+                }
+                updateProgress();
+            }
+
+            dayCards.forEach(card => {
+                const header = card.querySelector('.day-header');
+                header.addEventListener('click', () => {
+                    const content = card.querySelector('.day-content');
+
+                    if (card.classList.contains('active')) {
+                        card.classList.remove('active');
+                        content.style.maxHeight = '0';
+                    } else {
+                        card.classList.add('active');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+
+            const firstCard = dayCards[0];
+            if (firstCard) {
+                const content = firstCard.querySelector('.day-content');
+                firstCard.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+
+            loadProgress();
+        });
+    </script>
+</body>
+
+</html>
